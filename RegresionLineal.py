@@ -27,38 +27,49 @@ stats = [
     "hf_score",
     "hf_rank",
     ]
-data = pd.read_csv("hf.csv")
-print(data)
-data=data[data.countries=='Colombia']
-print(data)
-print(list(data))
-df = data.drop(['countries','region'], axis=1)
-datos=[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]]
-i=0
-for stats_name in stats:
-    X = df
-    y = df[[stats_name]]
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
-    reg = LinearRegression()
-    print(stats_name)
-    reg.fit(X_train[['year']], y_train)
-    y_predicted = reg.predict(X_test[['year']])
-    MSE=mean_squared_error(y_test, y_predicted)
-    print("Error cuadrado: ",MSE )
-    rs=r2_score(y_test, y_predicted)
-    print("R²: ",rs)
-    print("Predicciones: ", y_predicted)
-    datos[i].append(MSE)
-    datos[i].append(rs)
-    datos[i].append(y_predicted)
-    ig, ax = plt.subplots()
-    ax.scatter(y_test, y_predicted)
-    ax.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'k--', lw=4)
-    ax.set_xlabel('Datos')
-    ax.set_ylabel('Prediccion')
-    ax.set_title(stats_name)
-    plt.show()
-    i=i+1
-tabla=pd.DataFrame(datos,index=stats,columns=["Error medio Cuadrado", "R^2", "Predicciones"])
-print(tabla)
-#export_csv = tabla.to_csv (r'C:\Users\ASUS\source\repos\ProyectoLenguaje\ProyectoLenguaje\export_dataframe.csv', header=True)
+def LeerDatos():
+  data = pd.read_csv("hf.csv")
+  print(data)
+  data=data[data.countries=='Colombia']
+  print(data)
+  df = data.drop(['countries','region'], axis=1)
+  return df
+class RegLin(object):
+  def __init__(self, DF):
+    self.df=DF
+  def RegrLin(self):
+    datos=[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]]
+    i=0
+    for stats_name in stats:
+      X = df
+      y = df[[stats_name]]
+      X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+      reg = LinearRegression()
+      print(stats_name)
+      reg.fit(X_train[['year']], y_train)
+      y_predicted = reg.predict(X_test[['year']])
+      MSE=mean_squared_error(y_test, y_predicted)
+      print("Error cuadrado: ",MSE )
+      rs=r2_score(y_test, y_predicted)
+      print("R²: ",rs)
+      print("Predicciones: ", y_predicted)
+      datos[i].append(MSE)
+      datos[i].append(rs)
+      datos[i].append(y_predicted)
+      ig, ax = plt.subplots()
+      ax.scatter(y_test, y_predicted)
+      ax.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'k--', lw=4)
+      ax.set_xlabel('Datos')
+      ax.set_ylabel('Prediccion')
+      ax.set_title(stats_name)
+      plt.show()
+      i=i+1
+    return datos
+  def MostrarDatos(self,datos):
+    tabla=pd.DataFrame(datos,index=stats,columns=["Error medio Cuadrado", "R^2", "Predicciones"])
+    print(tabla)
+if __name__ == '__main__':
+  df=LeerDatos()
+  reg=RegLin(df)
+  datos=reg.RegrLin()
+  reg.MostrarDatos(datos)
